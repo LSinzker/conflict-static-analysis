@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ArrayTaintedAnalysisOneConflictIndirectTest {
+public class ArrayPositionsTaintedAnalysisTwoConflictsTest {
 
     private TaintedAnalysis analysis;
 
@@ -27,7 +27,7 @@ public class ArrayTaintedAnalysisOneConflictIndirectTest {
                 Map<String, List<Integer>> res = new HashMap<>();
                 List<Integer> lines = new ArrayList<>();
                 lines.add(8);    //source 1
-                res.put("br.unb.cic.analysis.samples.ArrayIndirectDataFlowSample", lines);
+                res.put("br.unb.cic.analysis.samples.ArrayPositionsDataFlowSample", lines);
                 return res;
             }
 
@@ -37,7 +37,7 @@ public class ArrayTaintedAnalysisOneConflictIndirectTest {
                 List<Integer> lines = new ArrayList<>();
                 lines.add(10);      //sink 1
                 lines.add(12);    //sink 2
-                res.put("br.unb.cic.analysis.samples.ArrayIndirectDataFlowSample", lines);
+                res.put("br.unb.cic.analysis.samples.ArrayPositionsDataFlowSample", lines);
                 return res;
             }
         };
@@ -50,7 +50,7 @@ public class ArrayTaintedAnalysisOneConflictIndirectTest {
                     }
                 }));
         String cp = "target/test-classes";
-        String targetClass = "br.unb.cic.analysis.samples.ArrayIndirectDataFlowSample";
+        String targetClass = "br.unb.cic.analysis.samples.ArrayPositionsDataFlowSample";
 
         PhaseOptions.v().setPhaseOption("jb", "use-original-names:true");
         SootWrapper.builder().withClassPath(cp).addClass(targetClass).build().execute();

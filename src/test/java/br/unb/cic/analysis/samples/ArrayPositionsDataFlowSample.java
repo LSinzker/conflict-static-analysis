@@ -1,6 +1,6 @@
 package br.unb.cic.analysis.samples;
 
-public class ArrayIndirectDataFlowSample {
+public class ArrayPositionsDataFlowSample {
 
     public static void main(String[] args) {
         int[] arr = {0,0,0,0,0};
