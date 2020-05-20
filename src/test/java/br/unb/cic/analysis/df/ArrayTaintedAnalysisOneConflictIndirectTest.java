@@ -1,20 +1,20 @@
 package br.unb.cic.analysis.df;
 
 import br.unb.cic.analysis.AbstractMergeConflictDefinition;
+import br.unb.cic.analysis.SootWrapper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import soot.*;
-import soot.options.Options;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SourceSinkConfluenceAnalysisVariableAttributionTest {
+public class ArrayTaintedAnalysisOneConflictIndirectTest {
 
-    private ConfluentAnalysis analysis2;
+    private TaintedAnalysis analysis;
 
     @Before
     public void configure() {
@@ -26,8 +26,8 @@ public class SourceSinkConfluenceAnalysisVariableAttributionTest {
             protected Map<String, List<Integer>> sourceDefinitions() {
                 Map<String, List<Integer>> res = new HashMap<>();
                 List<Integer> lines = new ArrayList<>();
-                lines.add(18);
-                res.put("br.unb.cic.analysis.samples.SourceSinkVariableAttributionSample", lines);
+                lines.add(8);    //source 1
+                res.put("br.unb.cic.analysis.samples.ArrayIndirectDataFlowSample", lines);
                 return res;
             }
 
@@ -35,29 +35,29 @@ public class SourceSinkConfluenceAnalysisVariableAttributionTest {
             protected Map<String, List<Integer>> sinkDefinitions() {
                 Map<String, List<Integer>> res = new HashMap<>();
                 List<Integer> lines = new ArrayList<>();
-                lines.add(20);
-                res.put("br.unb.cic.analysis.samples.SourceSinkVariableAttributionSample", lines);
+                lines.add(10);      //sink 1
+                lines.add(12);    //sink 2
+                res.put("br.unb.cic.analysis.samples.ArrayIndirectDataFlowSample", lines);
                 return res;
             }
         };
 
         PackManager.v().getPack("jtp").add(
-            new Transform("jtp.zeroConflict", new BodyTransformer() {
-            @Override
-            protected void internalTransform(Body body, String phaseName, Map<String, String> options) {
-                    analysis2 = new ConfluentAnalysis(body, definition);
+                new Transform("jtp.oneConflict", new BodyTransformer() {
+                    @Override
+                    protected void internalTransform(Body body, String phaseName, Map<String, String> options) {
+                        analysis = new TaintedAnalysis(body, definition);
                     }
                 }));
         String cp = "target/test-classes";
-        String targetClass = "br.unb.cic.analysis.samples.SourceSinkVariableAttributionSample";
+        String targetClass = "br.unb.cic.analysis.samples.ArrayIndirectDataFlowSample";
 
-        Options.v().setPhaseOption("jb", "optimize:false");
-
-        Main.main(new String[] {"-w", "-allow-phantom-refs", "-f", "J", "-keep-line-number", "-cp", cp, targetClass});
+        PhaseOptions.v().setPhaseOption("jb", "use-original-names:true");
+        SootWrapper.builder().withClassPath(cp).addClass(targetClass).build().execute();
     }
 
     @Test
     public void testDataFlowAnalysisExpectingOneConflict() {
-        Assert.assertEquals(1, analysis2.getConflicts().size());
+        Assert.assertEquals(2, analysis.getConflicts().size());
     }
 }
